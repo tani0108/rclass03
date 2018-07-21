@@ -1,0 +1,113 @@
+### RStudio 와 Oracle 연결
+
+install.packages("rJava")
+install.packages("DBI")
+install.packages("RJDBC")
+install.packages("data.table")
+install.packages("dplyr")
+
+library(rJava)
+library(DBI)
+library(RJDBC)
+library(data.table)
+library(dplyr)
+
+drv <- JDBC(
+  "oracle.jdbc.driver.OracleDriver",
+  "C:\\oraclexe\\app\\oracle\\product\\11.2.0\\server\\jdbc\\lib\\ojdbc6.jar"
+)
+conn <- dbConnect(drv,
+                  "jdbc:oracle:thin:@localhost:1521:xe",
+                  "hr",
+                  "oracle")
+tab <- dbGetQuery(conn, "SELECT * FROM TAB")
+View(tab)
+ tname <- tab$TNAME
+ tname 
+ 
+ #COUNTRIES -> cnt
+ #DEPARTMENTS -> dep
+ #EMPLOYEES -> emp
+ #EMP_DETAILS_VIEW ->empd
+ #JOBS -> job
+ #JOB_HISTORY -> jobh
+ #LOCATIONS -> loc
+ #REGIONS -> reg
+ 
+ cnt <- data.frame(dbGetQuery(conn,"SELECT * FROM COUNTRIES"))
+ View(cnt) 
+
+ dep <- data.frame(dbGetQuery(conn,"SELECT * FROM DEPARTMENTS"))
+ View(dep)
+
+ emp <- data.frame(dbGetQuery(conn,"SELECT * FROM EMPLOYEES"))
+ View(emp)
+ 
+ empd <- data.frame(dbGetQuery(conn,"SELECT * FROM EMP_DETAILS_VIEW"))
+ View(empd)
+ 
+ job <- data.frame(dbGetQuery(conn,"SELECT * FROM JOBS"))
+ View(job)
+
+ jobh <- data.frame(dbGetQuery(conn,"SELECT * FROM JOB_HISTORY"))
+ View(jobh)
+ 
+ loc <- data.frame(dbGetQuery(conn,"SELECT * FROM LOCATIONS"))
+ View(loc)
+ 
+ reg <- data.frame(dbGetQuery(conn,"SELECT * FROM REGIONS"))
+ View(reg)
+ 
+ View(cnt)
+
+  emp %>% 
+   select(everything()) %>%
+   slice(1:3)
+  #EMPLOYEE_ID
+  #FIRST_NAME
+  #LAST_NAME
+  #EMAIL 
+  #PHONE_NUMBER           
+  #HIRE_DATE
+  #JOB_ID 
+  #SALARY 
+  #COMMISSION_PCT 
+  #MANAGER_ID 
+  #DEPARTMENT_ID
+  
+  ## 문제1 사원의 first name과 last name을 붙여서 name로 된 
+  ## 컬럼을 추가하시오
+  ## 단, 이름 간격은 띄울 것 ex) James Dean
+  NAME<-paste(FIRST_NAME,LAST_NAME)
+
+
+  ## 문제2 salary는 연봉(달러)을 말합니다.
+  ## 경리부에서 매달 지급하는 월급여를 알려달라하여 month_sal
+  ## 컬럼 추가하시오
+  
+  
+  ## 문제3 경리부에서 급여가 20000불 이상인 사원의 목록을
+  ## NAME, EMPLOYEE_ID, SALARY 
+  ## 만 보여주세요
+  emp %>%
+    select(LAST_NAME,EMPLOYEE_ID,SALARY) %>%
+    filter(SALARY >= 20000)
+  
+  ## 문제 4. 경리부에서 급여가 7000불 이하인
+  ## 사원에게 보너스로 급여의 10%를 더 지급하
+  ## 겠다고 합니다. 이번달에 보너스가 추가된
+  ## 대상자의 목록을 NAME, EMPLOYEE_ID, SALARY
+  ## 만 보여주세요.
+  
+  ## 문제 5. 직원중에서 성(LAST_NAME) 에 e  또는
+  ## o 가 포함된 직원을 출력하시오.
+  ## 
+  
+
+  ## 문제 6. 직원중에서 급여가 가장 높은 사람이 CEO라고 합니다. 이름이 무엇?
+  ## apply(object, direction, function to apply)
+  ## 적용방향 -1:가로방향, 2:세로방향
+  ceo_sal <- apply(emp %>% 
+                     select(SALARY),2,max)
+  ceo_sal  
+  
